@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace BinaryHelper
@@ -42,7 +42,7 @@ namespace BinaryHelper
             try
             {
                 byte e = 0;
-                for (int i = 0; i < br.BaseStream.Length; i++)
+                for (long i = br.BaseStream.Position; i < br.BaseStream.Length; i++)
                 {
                     for (int p = 0; p < pattern.Length; p++)
                     {
