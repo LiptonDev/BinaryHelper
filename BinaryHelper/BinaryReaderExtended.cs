@@ -4,26 +4,10 @@ using System.IO;
 namespace BinaryHelper
 {
     /// <summary>
-    /// BinaryReader with new methods.
+    /// Extend for BinaryReader.
     /// </summary>
-    public class BinaryReaderExtended : BinaryReader
+    public static class BinaryReaderExtended
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="filePath">Path to file.</param>
-        public BinaryReaderExtended(string filePath) : base(File.OpenRead(filePath))
-        {
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="data">Data.</param>
-        public BinaryReaderExtended(byte[] data) : base(new MemoryStream(data))
-        {
-        }
-
         /// <summary>
         /// Find position in byte array.
         /// </summary>
@@ -32,7 +16,8 @@ namespace BinaryHelper
         /// <returns></returns>
         public static BinaryPosition FindPosition(byte[] data, byte[] pattern)
         {
-            using (BinaryReaderExtended br = new BinaryReaderExtended(data))
+            using (MemoryStream ms = new MemoryStream(data))
+            using (BinaryReader br = new BinaryReader(ms))
             {
                 return br.FindPosition(pattern);
             }
@@ -44,28 +29,29 @@ namespace BinaryHelper
         /// <param name="pattern">Pattern.</param>
         /// <param name="seekOrigin">Seek origin.</param>
         /// <returns></returns>
-        public BinaryPosition FindPosition(byte[] pattern, SeekOrigin seekOrigin = SeekOrigin.Current, bool resetPosition = true)
+        public static BinaryPosition FindPosition(this BinaryReader br, byte[] pattern, SeekOrigin seekOrigin = SeekOrigin.Current, bool resetPosition = true)
         {
             if (seekOrigin == SeekOrigin.End)
                 throw new ArgumentException("'SeekOrigin.End' not supported");
 
-            long currentPos = BaseStream.Position;
+            long currentPos = br.BaseStream.Position;
 
             if (seekOrigin == SeekOrigin.Begin)
-                BaseStream.Position = 0;
+                br.BaseStream.Position = 0;
 
             try
             {
                 byte e = 0;
-                for (int i = 0; i < BaseStream.Length; i++)
+                for (int i = 0; i < br.BaseStream.Length; i++)
                 {
                     for (int p = 0; p < pattern.Length; p++)
                     {
-                        if (ReadByte() == pattern[p])
+                        if (br.ReadByte() == pattern[p])
                         {
+                            i++;
                             if (++e == pattern.Length)
                             {
-                                return new BinaryPosition(BaseStream.Length == BaseStream.Position, BaseStream.Position);
+                                return new BinaryPosition(br.BaseStream.Length == br.BaseStream.Position, br.BaseStream.Position);
                             }
                         }
                         else
@@ -81,7 +67,7 @@ namespace BinaryHelper
             finally
             {
                 if (resetPosition)
-                    BaseStream.Position = currentPos;
+                    br.BaseStream.Position = currentPos;
             }
         }
     }
