@@ -22,3 +22,5 @@ Variable 'offset' are equal 'true' if position found and position in file is not
 if (offset)
     Console.WriteLine($"Money: {br.ReadInt32()}"); //money in file writed as 4 byte.
 ```
+
+Test file 'player.bin': https://github.com/LiptonOlolo/BinaryHelper/blob/master/player.bin?raw=true
