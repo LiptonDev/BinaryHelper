@@ -2,9 +2,9 @@
 
 ## How to find position in binary file? (For example we are search money)
 
-Make BinaryReaderExtended instance:
+Make BinaryReader instance:
 ```C#
-var br = new BinaryReaderExtended("player.bin");
+var br = new BinaryReader(File.OpenRead("player.bin"));
 ```
 
 Pattern: (1 byte = 1 char)
